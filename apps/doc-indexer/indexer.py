@@ -23,11 +23,11 @@ def process_pdf(file_path: str) -> List[Dict]:
                 text = page.extract_text()
                 if not text:
                     continue
-                
+
                 # Extract potential heading from first lines
                 first_lines = "\n".join(text.split("\n")[:3])
                 heading = extract_heading(first_lines)
-                
+
                 # Split into chunks
                 for i in range(0, len(text), CHUNK_SIZE):
                     chunk = text[i:i+CHUNK_SIZE]
@@ -39,7 +39,7 @@ def process_pdf(file_path: str) -> List[Dict]:
                     })
     except Exception as e:
         print(f"Error processing {file_path}: {str(e)}")
-    
+
     return chunks
 
 def save_to_json(data: List[Dict], filename: str):
@@ -54,12 +54,12 @@ def process_all_pdfs():
     if not os.path.exists(DATA_FOLDER):
         print(f"Error: Data folder '{DATA_FOLDER}' not found")
         return []
-    
+
     pdf_files = [f for f in os.listdir(DATA_FOLDER) if f.lower().endswith('.pdf')]
     if not pdf_files:
         print(f"No PDF files found in '{DATA_FOLDER}'")
         return []
-    
+
     all_results = []
     for pdf_file in pdf_files:
         file_path = os.path.join(DATA_FOLDER, pdf_file)
@@ -71,10 +71,10 @@ def process_all_pdfs():
                 "chunks": chunks,
                 "total_pages": chunks[-1]["page_number"] if chunks else 0
             })
-    
+
     # This would be the return value if used as a function
     # return all_results
-    
+
     # For demonstration, we'll print and comment the return structure
     print("\nProcessing complete. Example return structure:")
     print("""[
