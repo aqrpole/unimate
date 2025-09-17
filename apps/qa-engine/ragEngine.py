@@ -7,8 +7,8 @@ from langchain.prompts import PromptTemplate
 import sys
 
 class SimpleRAGQA:
-    def __init__(self, chroma_db_path: str = "/home/unimate/chroma_db"):
-        print("🚀 Initializing RAG Q&A with Mistral 7B...")
+    def __init__(self, chroma_db_path: str = "/home/unimate/chroma_db", ollama_host: str = "http://localhost:11434"):
+        print("🚀 Initializing RAG Q&A with Dockerized Ollama...")
         
         # 1. Initialize Local Embeddings
         self.embeddings = HuggingFaceEmbeddings(
@@ -22,16 +22,18 @@ class SimpleRAGQA:
             collection_name="document_chunks"
         )
         
-        # 3. Initialize Mistral 7B
+        # 3. Connect to Ollama running in Docker
         self.llm = Ollama(
+            base_url=ollama_host,  # Connect to Ollama Docker container
             model="mistral",
             temperature=0.1,
-            num_predict=512
+            num_predict=512,
+            timeout=60  # Increase timeout for Docker communication
         )
         
         # 4. Create RAG chain
         self.qa_chain = self._create_qa_chain()
-        print("✅ RAG Q&A initialized successfully!")
+        print(f"✅ RAG Q&A initialized with Ollama at {ollama_host}!")
     
     def _create_qa_chain(self):
         """Create simple RAG chain"""
@@ -91,13 +93,22 @@ def main():
     # Get question from command line argument
     if len(sys.argv) < 2:
         print("Usage: python rag_qa.py \"Your question here\"")
+        print("Optional: python rag_qa.py \"Your question\" --host http://ollama-host:11434")
         sys.exit(1)
     
-    question = " ".join(sys.argv[1:])
+    # Parse command line arguments
+    question = sys.argv[1]
+    ollama_host = "http://localhost:11434"  # Default
+    
+    # Check for custom host argument
+    if len(sys.argv) >= 4 and sys.argv[2] == "--host":
+        ollama_host = sys.argv[3]
+    
     print(f"❓ Question: {question}")
+    print(f"🌐 Connecting to Ollama at: {ollama_host}")
     
     # Initialize and ask
-    rag = SimpleRAGQA()
+    rag = SimpleRAGQA(ollama_host=ollama_host)
     result = rag.ask_question(question)
     
     # Display results
@@ -114,4 +125,4 @@ def main():
                 print(f"     Preview: {source['content_preview']}")
 
 if __name__ == "__main__":
-    main()
+    main() 
