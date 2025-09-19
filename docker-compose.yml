@@ -1,5 +1,10 @@
+networks:
+  unimate-net:
+    name: unimate-network
+
 services:
   ollama:
+    container_name: ollama
     image: ollama/ollama:latest
     ports:
       - "11434:11434"
@@ -9,7 +14,10 @@ services:
     dns:
       - 8.8.8.8
       - 1.1.1.1
+    networks:
+      - unimate-net
   rag-service:
+    container_name: rag-service
     build:
       context: .
       dockerfile: Dockerfile.rag
@@ -21,6 +29,8 @@ services:
       - /home/unimate/chroma_db:/home/unimate/chroma_db  # Mount EXISTING directory
     environment:
       - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - unimate-net
 
 volumes:
   ollama_data:

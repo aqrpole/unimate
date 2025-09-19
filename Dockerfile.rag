@@ -2,12 +2,18 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+COPY requirements.txt .
+RUN pip install --retries 5 --timeout 1000 --no-cache-dir -r requirements.txt
+
 # Install dependencies
-RUN pip3 install --retries 5 --timeout 1000 langchain langchain-community langchain-core  chromadb sentence-transformers
+RUN pip3 install --retries 5 --timeout 1000 langchain-core
 
 # Copy code
-COPY apps/qa-engine/ragEngine.py . 
+COPY apps/qa-engine/ragEngine.py app.py 
 
+EXPOSE 8000
 
 # NO mkdir command here - we'll mount the existing directory
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
 CMD ["python", "ragEngine.py", "What is this document about?", "--host", "http://ollama:11434"]
