@@ -13,7 +13,7 @@ app = FastAPI(title="RAG Q&A API", version="1.0.0")
 
 class QuestionRequest(BaseModel):
     question: str
-    ollama_host: Optional[str] = "http://unimate-ollama-1:11434"#ip change req172.18.0.2
+    ollama_host: Optional[str] = "http://ollama:11434"#ip change req172.18.0.2
 
 class QuestionResponse(BaseModel):
     question: str

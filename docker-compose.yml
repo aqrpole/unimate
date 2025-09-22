@@ -1,6 +1,6 @@
 networks:
-  unimate-net:
-    name: unimate-network
+  unimate-network:
+    external: true
 
 services:
   ollama:
@@ -15,7 +15,7 @@ services:
       - 8.8.8.8
       - 1.1.1.1
     networks:
-      - unimate-net
+      - unimate-network
   rag-service:
     container_name: rag-service
     build:
@@ -30,7 +30,7 @@ services:
     environment:
       - OLLAMA_HOST=http://ollama:11434
     networks:
-      - unimate-net
+      - unimate-network
 
 volumes:
   ollama_data:
